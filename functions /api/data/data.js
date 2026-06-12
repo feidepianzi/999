@@ -12,7 +12,7 @@ export async function onRequestGet({ env }) {
 export async function onRequestPost({ request, env }) {
     try {
         var body = await request.text();
-        await env.ARRAY_DATA_KV.put("array_data", body);
+        await env.ARRAY_DATA_KV.put("xx55", body);
         return new Response("OK", { status: 200 });
     } catch(e) {
         return new Response("ERROR:" + e.message, { status: 500 });

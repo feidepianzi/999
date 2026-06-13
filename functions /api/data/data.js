@@ -6,7 +6,11 @@ export async function onRequestGet({ env }) {
         if (!value) {
             data = { frontend: [], backend1: [], backend2: [] };
         } else {
-            data = JSON.parse(value);
+            try {
+                data = JSON.parse(value);
+            } catch(e) {
+                data = { frontend: [], backend1: [], backend2: [] };
+            }
             // Migration: if old format (array), convert to new format
             if (Array.isArray(data)) {
                 data = { frontend: data, backend1: [], backend2: [] };
@@ -39,7 +43,7 @@ export async function onRequestPost({ request, env }) {
         await env.MY_KV.put("search_app_data_v2", JSON.stringify(data));
         return new Response("OK", { status: 200 });
     } catch(e) {
-        return new Response("ERROR:" + e.message, { status: 500 });
+        return new Response("ERROR:" + e.toString(), { status: 500 });
     }
 }
 

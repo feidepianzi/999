@@ -2,142 +2,104 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title></title>
     <style>
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:Arial,sans-serif;background:#fff;min-height:100vh}
-        .header{padding:10px 20px;display:flex;justify-content:flex-start;align-items:center;background:transparent;border-bottom:none;pointer-events:none}
-        .header-links{display:flex;gap:16px;align-items:center;flex-wrap:wrap;pointer-events:auto}
-        .header-links a{font-size:14px;color:#333;text-decoration:none}
-        .header-links a:hover{color:#4e6ef2}
-        .logo-area{text-align:center;padding:60px 0 20px}
-        .logo-img{width:200px;height:auto}
-        .search-area{text-align:center;padding:10px 0 30px}
-        .search-wrapper{display:inline-flex;width:90%;max-width:640px;height:48px;border:2px solid #4e6ef2;border-radius:10px;overflow:hidden;background:#fff}
-        .search-input{flex:1;padding:0 16px;font-size:16px;border:none;outline:none;background:transparent}
-        .result-area{min-height:180px;display:flex;align-items:center;justify-content:center;padding:20px}
-        .result{font-size:120px;font-weight:bold;opacity:0}
-        .result.show{opacity:1}
-        .result.found{color:#00c853}
-        .result.not-found{color:#e1251b}
-        .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:2000}
-        .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:30px;border-radius:12px;min-width:360px;max-width:90%;z-index:2001}
-        .modal h2{margin:0 0 20px;font-size:20px;color:#333}
-        .modal p{margin:0 0 15px;font-size:14px;color:#666;line-height:1.5}
-        .modal textarea{width:100%;height:180px;margin:10px 0;padding:12px;font-size:14px;border:1px solid #ddd;border-radius:6px;resize:none;box-sizing:border-box}
-        .modal input[type=password]{padding:10px;font-size:14px;width:100%;margin:10px 0;border:1px solid #ddd;border-radius:6px;box-sizing:border-box}
-        .modal-btns{display:flex;gap:10px;margin-top:15px}
-        .modal button{flex:1;padding:10px 0;font-size:14px;border:none;cursor:pointer;border-radius:6px;font-weight:500}
-        .btn-save{background:#4e6ef2;color:#fff}
-        .btn-save:hover{background:#4662d1}
-        .btn-cancel{background:#f5f5f5;color:#666}
-        .btn-cancel:hover{background:#e8e8e8}
-        .btn-clear{background:#fff3cd;color:#856404;border:1px solid #ffc107}
-        .btn-clear:hover{background:#ffeaa7}
-        .btn-confirm{background:#007bff;color:#fff}
-        .btn-confirm:hover{background:#0056b3}
-        .msg{font-size:14px;margin-top:12px;text-align:center}
-        .msg.error{color:#e1251b}
-        .msg.success{color:#00c853}
-        .error-msg{color:#e1251b;font-size:18px;margin-top:12px;text-align:center;font-weight:bold}
-        .secret-zone{position:fixed;top:0;right:0;width:120px;height:120px;cursor:pointer;opacity:0;z-index:9999}
-        @media(max-width:640px){
-            .logo-img{width:150px}
-            .logo-area{padding:40px 0 15px}
-            .search-wrapper{height:44px;border-radius:8px}
-            .result{font-size:80px}
-            .modal{min-width:300px;padding:20px}
-            .header-links{gap:10px}
-            .header-links a{font-size:12px}
-        }
+        body{font-family:Arial,sans-serif;max-width:600px;margin:20px auto;padding:10px;text-align:center}
+        .search-box{margin:150px 0}
+        input[type=password]{padding:10px;font-size:16px;width:90%;max-width:300px;text-align:center;border:none;outline:none;border-bottom:1px solid #ccc}
+        .result{font-size:80px;font-weight:bold;margin-top:10px;height:100px;line-height:100px;word-wrap:break-word;overflow:hidden}
+        .result.found{color:green}
+        .result.not-found{color:red}
+        .secret-zone{position:absolute;top:0;right:0;width:100px;height:100px;cursor:pointer;opacity:0}
+        .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000}
+        .modal{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:30px;border-radius:8px;min-width:350px;max-width:90%;max-height:90vh;overflow-y:auto}
+        .modal h2{margin-top:0;font-size:18px}
+        .modal h3{margin:15px 0 5px;font-size:14px;color:#333}
+        .modal textarea{width:100%;height:120px;margin:5px 0;padding:8px;font-size:13px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box}
+        .modal input[type=password]{padding:8px;font-size:14px;width:200px;margin:10px 0;box-sizing:border-box}
+        .modal button{padding:8px 16px;font-size:14px;margin:5px;border:none;cursor:pointer;border-radius:4px}
+        .modal .btn-save{background:#28a745;color:#fff}
+        .modal .btn-cancel{background:#dc3545;color:#fff}
+        .modal .btn-confirm{background:#007bff;color:#fff}
+        .modal .btn-clear{background:#ffc107;color:#000}
+        .array-count{font-size:12px;color:#666;margin-left:10px}
+        .error-msg{color:red;font-size:14px;margin-top:10px}
+        @media(max-width:600px){body{margin:10px auto;padding:5px}.result{font-size:60px;height:80px;line-height:80px}.modal{min-width:280px;padding:20px}}
     </style>
 </head>
 <body>
     <div class="secret-zone" onclick="showPasswordPrompt()"></div>
-    <div class="header">
-        <div class="header-links">
-            <a href="#">新闻</a>
-            <a href="#">hao123</a>
-            <a href="#">地图</a>
-            <a href="#">贴吧</a>
-            <a href="#">视频</a>
-            <a href="#">图片</a>
-            <a href="#">网盘</a>
-            <a href="#">文库</a>
-            <a href="#">更多</a>
-        </div>
-    </div>
-    <div class="logo-area">
-        <img class="logo-img" src="https://search-operate.cdn.bcebos.com/7c076111f2f33080a2e7f4ca5ec9252f.gif" alt="logo"/>
-    </div>
-    <div class="search-area">
-        <div class="search-wrapper">
-            <input type="password" class="search-input" id="numberInput" autocomplete="off"/>
-        </div>
-    </div>
-    <div class="result-area">
-        <div id="result" class="result"></div>
-    </div>
-    <div id="passwordModal" class="modal-overlay" onclick="if(event.target==this)hidePasswordPrompt()">
+    <div class="search-box"><input type="password" id="numberInput" /></div>
+    <div id="result" class="result"></div>
+    <div id="passwordModal" class="modal-overlay">
         <div class="modal">
             <h2>请输入密码</h2>
-            <input type="password" id="passwordInput" placeholder="密码"/>
-            <div class="modal-btns">
-                <button class="btn-confirm" onclick="checkPassword()">确认</button>
-                <button class="btn-cancel" onclick="hidePasswordPrompt()">取消</button>
-            </div>
+            <input type="password" id="passwordInput" placeholder="密码" /><br/>
+            <button class="btn-confirm" onclick="checkPassword()">确认</button>
+            <button class="btn-cancel" onclick="hidePasswordPrompt()">取消</button>
             <div id="passwordError" class="error-msg"></div>
         </div>
     </div>
-    <div id="updateModal" class="modal-overlay" onclick="if(event.target==this)hideUpdateModal()">
+    <div id="updateModal" class="modal-overlay">
         <div class="modal">
-            <h2>更新数组数据</h2>
-            <div id="saveCount" style="display:none;font-size:22px;font-weight:bold;color:#00c853;margin-bottom:10px;padding:10px;background:#e8f5e9;border-radius:6px;text-align:center"></div>
-            <p>请输入新的数组数据（每行一个编号，或用逗号分隔）：</p>
-            <textarea id="arrayInput" placeholder=""></textarea>
-            <div class="modal-btns">
-                <button class="btn-save" onclick="saveArray()">保存</button>
+            <h2>管理数组数据</h2>
+            <h3>主数组 (frontend) <span id="countFrontend" class="array-count"></span></h3>
+            <textarea id="inputFrontend" placeholder="每行一个编号"></textarea>
+            <button class="btn-clear" onclick="clearFrontend()">一键清除主数组</button>
+            <h3>后台数组1 (backend1) <span id="countBackend1" class="array-count"></span></h3>
+            <textarea id="inputBackend1" placeholder="每行一个编号"></textarea>
+            <button class="btn-clear" onclick="clearBackend1()">一键清除 backend1</button>
+            <h3>后台数组2 (backend2) <span id="countBackend2" class="array-count"></span></h3>
+            <textarea id="inputBackend2" placeholder="每行一个编号"></textarea>
+            <button class="btn-clear" onclick="clearBackend2()">一键清除 backend2</button>
+            <div style="margin-top:15px">
+                <button class="btn-save" onclick="saveAllArrays()">保存全部</button>
                 <button class="btn-cancel" onclick="hideUpdateModal()">取消</button>
-                <button class="btn-clear" onclick="clearArray()">一键清除数组</button>
             </div>
             <div id="updateMsg" class="error-msg"></div>
         </div>
     </div>
     <script>
         var PASSWORD = "woainimm";
+        var dataObj = { frontend: [], backend1: [], backend2: [] };
         var numbersArray = [];
+
         async function loadArray() {
             try {
                 var resp = await fetch("/api/data");
                 if (resp.ok) {
-                    var data = await resp.json();
-                    numbersArray = data;
-                } else {
-                    throw new Error("status:" + resp.status);
+                    dataObj = await resp.json();
+                    // Merge all arrays for search
+                    numbersArray = (dataObj.frontend || []).concat(dataObj.backend1 || [], dataObj.backend2 || []);
                 }
             } catch(e) {
                 console.error("load error:", e);
+                dataObj = { frontend: [], backend1: [], backend2: [] };
                 numbersArray = [];
             }
         }
-        async function saveArrayToStorage() {
+
+        async function saveAllArraysToStorage() {
             await fetch("/api/data", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(numbersArray)
+                body: JSON.stringify(dataObj)
             });
         }
+
         loadArray();
+
         var debounceTimer = null;
         function checkNumber() {
             var n = document.getElementById("numberInput").value.trim();
             var r = document.getElementById("result");
             if (!n) { r.className = "result"; r.textContent = ""; return; }
             var found = numbersArray.indexOf(n) >= 0;
-            r.className = "result show " + (found ? "found" : "not-found");
+            r.className = "result " + (found ? "found" : "not-found");
             r.textContent = found ? "👌" : "😒";
         }
+
         document.getElementById("numberInput").addEventListener("input", function() {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(checkNumber, 500);
@@ -145,6 +107,7 @@
         document.getElementById("numberInput").addEventListener("keypress", function(e) {
             if (e.key === "Enter") { clearTimeout(debounceTimer); checkNumber(); }
         });
+
         function showPasswordPrompt() {
             var m = document.getElementById("passwordModal");
             m.style.display = "block";
@@ -155,7 +118,8 @@
         function hidePasswordPrompt() { document.getElementById("passwordModal").style.display = "none"; }
         function checkPassword() {
             if (document.getElementById("passwordInput").value === PASSWORD) {
-                hidePasswordPrompt(); showUpdateModal();
+                hidePasswordPrompt();
+                showUpdateModal();
             } else {
                 document.getElementById("passwordError").textContent = "密码错误！";
             }
@@ -163,40 +127,73 @@
         document.getElementById("passwordInput").addEventListener("keypress", function(e) {
             if (e.key === "Enter") checkPassword();
         });
+
+        function parseInput(input) {
+            if (!input.trim()) return [];
+            return input.split(/\W+/).map(function(s){return s.trim();}).filter(function(s){return /\d/.test(s);}).map(function(s){return s.replace(/^[^0-9]*/,"").replace(/[^0-9]+$/,"");});
+        }
+
         function showUpdateModal() {
             document.getElementById("updateModal").style.display = "block";
-            document.getElementById("arrayInput").value = numbersArray.join("\n");
-            document.getElementById("arrayInput").style.display = "block";
-            document.getElementById("saveCount").style.display = "none";
-            document.querySelector("#updateModal .modal-btns").style.display = "flex";
-            document.querySelector("#updateModal p").style.display = "block";
+            document.getElementById("inputFrontend").value = (dataObj.frontend || []).join("\n");
+            document.getElementById("inputBackend1").value = (dataObj.backend1 || []).join("\n");
+            document.getElementById("inputBackend2").value = (dataObj.backend2 || []).join("\n");
+            updateCounts();
             document.getElementById("updateMsg").textContent = "";
         }
-        function hideUpdateModal() { document.getElementById("updateModal").style.display = "none"; }
-        async function saveArray() {
-            var input = document.getElementById("arrayInput").value.trim();
-            var msgEl = document.getElementById("updateMsg");
-            if (!input) { msgEl.textContent = "请输入数据！"; return; }
-            var newArray = input.split(/\W+/).map(function(s){return s.trim();}).filter(function(s){return /\d/.test(s);}).map(function(s){return s.replace(/^[^0-9]*/,"").replace(/[^0-9]+$/,"");});
-            if (newArray.length === 0) { msgEl.textContent = "没有有效的数据！"; return; }
-            numbersArray = newArray;
-            await saveArrayToStorage();
-            var countEl = document.getElementById("saveCount");
-            countEl.textContent = "已保存 " + numbersArray.length + " 条数据";
-            countEl.style.display = "block";
-            document.getElementById("arrayInput").style.display = "none";
-            document.querySelector("#updateModal .modal-btns").style.display = "none";
-            document.querySelector("#updateModal p").style.display = "none";
+
+        function updateCounts() {
+            var fe = parseInput(document.getElementById("inputFrontend").value);
+            var b1 = parseInput(document.getElementById("inputBackend1").value);
+            var b2 = parseInput(document.getElementById("inputBackend2").value);
+            document.getElementById("countFrontend").textContent = "(" + fe.length + " 条)";
+            document.getElementById("countBackend1").textContent = "(" + b1.length + " 条)";
+            document.getElementById("countBackend2").textContent = "(" + b2.length + " 条)";
         }
-        async function clearArray() {
-            if (confirm("确定要清空所有数组数据吗？")) {
-                numbersArray = [];
-                await saveArrayToStorage();
-                document.getElementById("arrayInput").value = "";
-                var msgEl = document.getElementById("updateMsg");
-                msgEl.textContent = "已清除所有数组数据！";
-                msgEl.style.color = "green";
+
+        document.getElementById("inputFrontend").addEventListener("input", updateCounts);
+        document.getElementById("inputBackend1").addEventListener("input", updateCounts);
+        document.getElementById("inputBackend2").addEventListener("input", updateCounts);
+
+        function hideUpdateModal() { document.getElementById("updateModal").style.display = "none"; }
+
+        function clearFrontend() {
+            if (confirm("确定要清除主数组 (frontend) 吗？")) {
+                document.getElementById("inputFrontend").value = "";
+                updateCounts();
             }
+        }
+        function clearBackend1() {
+            if (confirm("确定要清除 backend1 数组吗？")) {
+                document.getElementById("inputBackend1").value = "";
+                updateCounts();
+            }
+        }
+        function clearBackend2() {
+            if (confirm("确定要清除 backend2 数组吗？")) {
+                document.getElementById("inputBackend2").value = "";
+                updateCounts();
+            }
+        }
+
+        async function saveAllArrays() {
+            var msgEl = document.getElementById("updateMsg");
+            dataObj.frontend = parseInput(document.getElementById("inputFrontend").value);
+            dataObj.backend1 = parseInput(document.getElementById("inputBackend1").value);
+            dataObj.backend2 = parseInput(document.getElementById("inputBackend2").value);
+            
+            var total = dataObj.frontend.length + dataObj.backend1.length + dataObj.backend2.length;
+            if (total === 0) {
+                msgEl.textContent = "没有有效的数据！";
+                msgEl.style.color = "red";
+                return;
+            }
+            
+            await saveAllArraysToStorage();
+            numbersArray = dataObj.frontend.concat(dataObj.backend1, dataObj.backend2);
+            msgEl.textContent = "保存成功！共 " + total + " 条数据。";
+            msgEl.style.color = "green";
+            setTimeout(hideUpdateModal, 2000);
         }
     </script>
 </body>

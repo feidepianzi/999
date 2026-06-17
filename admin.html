@@ -25,10 +25,10 @@
     </style>
 </head>
 <body>
-    <h1>后台管理页面</h1>
+
     <div class="admin-buttons">
-        <button class="admin-btn" onclick="showPasswordPrompt(1)">管理 Backend 1</button>
-        <button class="admin-btn" onclick="showPasswordPrompt(2)">管理 Backend 2</button>
+        <button class="admin-btn" onclick="showPasswordPrompt(1)">管理1</button>
+        <button class="admin-btn" onclick="showPasswordPrompt(2)">管理2</button>
     </div>
 
     <div id="passwordModal" class="modal-overlay">
@@ -54,7 +54,8 @@
     </div>
 
     <script>
-        var PASSWORD = "woainimm";
+        var PASSWORD1 = "88888888";
+        var PASSWORD2 = "66666666";
         var currentZone = 0;
         var dataObj = { frontend: [], backend1: [], backend2: [] };
 
@@ -93,7 +94,9 @@
         }
 
         function checkPassword() {
-            if (document.getElementById("passwordInput").value === PASSWORD) {
+            var inputPassword = document.getElementById("passwordInput").value;
+            var correctPassword = currentZone === 1 ? PASSWORD1 : PASSWORD2;
+            if (inputPassword === correctPassword) {
                 hidePasswordPrompt();
                 showUpdateModal();
             } else {

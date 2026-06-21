@@ -41,7 +41,7 @@
     <div id="updateModal" class="modal-overlay">
         <div class="modal">
             <h2 id="updateTitle">更新数组数据</h2>
-            <p>请输入新的数组数据（每行一个编号，或用逗号分隔）：</p>
+            <p>请输入新的数组数据（每行一个编号，或用顿号/逗号分隔）：</p>
             <textarea id="arrayInput" placeholder=""></textarea><br/>
             <button class="btn-save" onclick="saveArray()">保存</button>
             <button class="btn-cancel" onclick="hideUpdateModal()">取消</button>
@@ -50,6 +50,151 @@
         </div>
     </div>
 
-    <script>var PASSWORD1 = String.fromCharCode(56,56,56,56,56,56,56,56);var PASSWORD2 = String.fromCharCode(54,54,54,54,54,54,54,54);var currentZone = 0;var dataObj ={frontend:[],backend1:[],backend2:[]};async function loadData(){try{var resp = await fetch("/api/data");if (resp.ok) dataObj = await resp.json();}catch(e){}}async function saveDataToStorage(){await fetch("/api/data",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(dataObj)});}loadData();function showPasswordPrompt(zone){currentZone = zone;document.getElementById("passwordModal").style.display = "block";document.getElementById("passwordTitle").textContent = "Backend" + zone + " - 请输入密码";document.getElementById("passwordInput").value = "";document.getElementById("passwordError").textContent = "";document.getElementById("passwordInput").focus();}function hidePasswordPrompt(){document.getElementById("passwordModal").style.display = "none";}function checkPassword(){var inputPassword = document.getElementById("passwordInput").value;var correctPassword = currentZone === 1 ? PASSWORD1:PASSWORD2;if (inputPassword === correctPassword){hidePasswordPrompt();showUpdateModal();}else{document.getElementById("passwordError").textContent = "密码错误！";}}document.getElementById("passwordInput").addEventListener("keypress",function(e){if(e.key==="Enter")checkPassword();});function showUpdateModal(){document.getElementById("updateModal").style.display = "block";document.getElementById("updateTitle").textContent = "Backend" + currentZone + " - 追加数据";var arr = currentZone === 1 ? dataObj.backend1:dataObj.backend2;document.getElementById("arrayInput").value = (arr || []).join("\n");document.getElementById("updateMsg").textContent = "已有 " + (arr || []).length + " 条数据，在下面追加新数据";document.getElementById("updateMsg").style.color = "#666";}function hideUpdateModal(){document.getElementById("updateModal").style.display = "none";}async function clearCurrentArray(){if (!confirm("确定要清除当前数组吗？")) return;document.getElementById("arrayInput").value = "";if (currentZone === 1){dataObj.backend1 = [];}else{dataObj.backend2 = [];}await saveDataToStorage();document.getElementById("updateMsg").textContent = "已清除！";document.getElementById("updateMsg").style.color = "green";}function parseInput(input){if (!input.trim()) return [];var firstHouIdx = input.indexOf('\u539a');var result = [];var lines = input.split('\n');for (var li = 0;li < lines.length;li++){var tline = lines[li].trim();if (!tline) continue;var items = tline.split(/[、`、\u3002,\r]+/);for (var pi = 0;pi < items.length;pi++){var p = items[pi].trim();if (!p) continue;var nm = p.match(/^([0-9A-Za-z]+)/);if (!nm) continue;var firstNumIdx = input.indexOf(nm[1]);if (firstHouIdx >= 0 && firstNumIdx >= 0 && firstNumIdx < firstHouIdx){result.push(nm[1] + '-\u539a');}else{result.push(nm[1]);}}}var seen ={};var final = [];for (var ri = 0;ri < result.length;ri++){if (!seen[result[ri]]){seen[result[ri]] = true;final.push(result[ri]);}}return final;}async function saveArray(){var input = document.getElementById("arrayInput").value;var msgEl = document.getElementById("updateMsg");var existing = currentZone === 1 ? (dataObj.backend1 || []):(dataObj.backend2 || []);if (!input.trim()){if (currentZone === 1){dataObj.backend1 = [];}else{dataObj.backend2 = [];}await saveDataToStorage();msgEl.textContent = "已保存（空数组）";msgEl.style.color = "green";setTimeout(hideUpdateModal,1500);return;}var existingSet ={};for (var e = 0;e < existing.length;e++) existingSet[existing[e]] = true;var lines = input.split('\n');var newItems = [];for (var li = 0;li < lines.length;li++){var tline = lines[li].trim();if (!tline) continue;if (existingSet[tline]) continue;newItems.push(tline);}var newArray = parseInput(newItems.join('\n'));var combined = existing.slice();for (var i = 0;i < newArray.length;i++){if (combined.indexOf(newArray[i]) < 0) combined.push(newArray[i]);}if (newArray.length === 0 && newItems.length === 0){msgEl.textContent = "没有新数据！";msgEl.style.color = "red";return;}if (currentZone === 1){dataObj.backend1 = combined;}else{dataObj.backend2 = combined;}await saveDataToStorage();msgEl.textContent = "追加成功！新增 " + newArray.length + " 条，共 " + combined.length + " 条数据。";msgEl.style.color = "green";setTimeout(hideUpdateModal,2000);}</script>
+    <script>
+        var PASSWORD1 = String.fromCharCode(56,56,56,56,56,56,56,56);
+        var PASSWORD2 = String.fromCharCode(54,54,54,54,54,54,54,54);
+        var currentZone = 0;
+        var dataObj = { frontend: [], backend1: [], backend2: [] };
+
+        async function loadData() {
+            try {
+                var resp = await fetch("/api/data");
+                if (resp.ok) dataObj = await resp.json();
+            } catch(e) {}
+        }
+
+        async function saveDataToStorage() {
+            await fetch("/api/data", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(dataObj) });
+        }
+
+        loadData();
+
+        function showPasswordPrompt(zone) {
+            currentZone = zone;
+            document.getElementById("passwordModal").style.display = "block";
+            document.getElementById("passwordTitle").textContent = "Backend" + zone + " - 请输入密码";
+            document.getElementById("passwordInput").value = "";
+            document.getElementById("passwordError").textContent = "";
+            document.getElementById("passwordInput").focus();
+        }
+
+        function hidePasswordPrompt() { document.getElementById("passwordModal").style.display = "none"; }
+
+        function checkPassword() {
+            var inputPassword = document.getElementById("passwordInput").value;
+            var correctPassword = currentZone === 1 ? PASSWORD1 : PASSWORD2;
+            if (inputPassword === correctPassword) { hidePasswordPrompt(); showUpdateModal(); }
+            else { document.getElementById("passwordError").textContent = "密码错误！"; }
+        }
+
+        document.getElementById("passwordInput").addEventListener("keypress", function(e){if(e.key==="Enter")checkPassword();});
+
+        function showUpdateModal() {
+            document.getElementById("updateModal").style.display = "block";
+            document.getElementById("updateTitle").textContent = "Backend" + currentZone + " - 追加数据";
+            var arr = currentZone === 1 ? dataObj.backend1 : dataObj.backend2;
+            document.getElementById("arrayInput").value = (arr || []).join("\n");
+            document.getElementById("updateMsg").textContent = "已有 " + (arr || []).length + " 条数据，在下面追加新数据";
+            document.getElementById("updateMsg").style.color = "#666";
+        }
+
+        function hideUpdateModal() { document.getElementById("updateModal").style.display = "none"; }
+
+        async function clearCurrentArray() {
+            if (!confirm("确定要清除当前数组吗？")) return;
+            document.getElementById("arrayInput").value = "";
+            if (currentZone === 1) { dataObj.backend1 = []; } else { dataObj.backend2 = []; }
+            await saveDataToStorage();
+            document.getElementById("updateMsg").textContent = "已清除！";
+            document.getElementById("updateMsg").style.color = "green";
+        }
+
+        function parseInput(input) {
+            if (!input.trim()) return [];
+            var lines = input.split('\n');
+            var addHou = [];
+            for (var i = 0; i < lines.length; i++) {
+                addHou[i] = false;
+                if (i + 1 < lines.length && lines[i+1].indexOf('厚') >= 0) { addHou[i] = true; }
+            }
+            var out = [];
+            for (var i = 0; i < lines.length; i++) {
+                var t = lines[i].trim();
+                if (!t) continue;
+                var lineHasHou = t.indexOf('厚') >= 0;
+                var items = t.split(/[、。]+/);
+                for (var ii = 0; ii < items.length; ii++) {
+                    var item = items[ii].trim();
+                    if (!item) continue;
+                    var commaIdx = item.indexOf('，');
+                    var suffix = '';
+                    if (commaIdx >= 0) {
+                        suffix = item.substring(commaIdx + 1).trim().replace(/[\u4e00-\u9fff]+/g, '');
+                    }
+                    var rawId = commaIdx >= 0 ? item.substring(0, commaIdx).trim() : item;
+                    if (!rawId) continue;
+                    if (!/[0-9A-Za-z]/.test(rawId)) continue;
+                    var num;
+                    if (/^[\u4e00-\u9fff]/.test(rawId)) {
+                        var idNoChinese = rawId.replace(/[\u4e00-\u9fff]+/g, '');
+                        var lm = idNoChinese.match(/^([A-Za-z]+)(.*)$/);
+                        if (lm) { num = lm[2] || ''; }
+                        if (!num) continue;
+                    } else {
+                        var m = rawId.match(/^([0-9A-Za-z]+)/);
+                        if (!m) continue;
+                        num = m[1];
+                    }
+                    if (suffix) {
+                        out.push(num + '-' + suffix);
+                    } else if (lineHasHou || item.indexOf('厚') >= 0 || addHou[i]) {
+                        out.push(num + '-厚');
+                    } else {
+                        out.push(num);
+                    }
+                }
+            }
+            var seen = {}, fin = [];
+            for (var ri = 0; ri < out.length; ri++) {
+                if (!seen[out[ri]]) { seen[out[ri]] = true; fin.push(out[ri]); }
+            }
+            return fin;
+        }
+
+        async function saveArray() {
+            var input = document.getElementById("arrayInput").value;
+            var msgEl = document.getElementById("updateMsg");
+            var existing = currentZone === 1 ? (dataObj.backend1 || []) : (dataObj.backend2 || []);
+            if (!input.trim()) {
+                if (currentZone === 1) { dataObj.backend1 = []; } else { dataObj.backend2 = []; }
+                await saveDataToStorage();
+                msgEl.textContent = "已保存（空数组）"; msgEl.style.color = "green";
+                setTimeout(hideUpdateModal, 1500); return;
+            }
+            var existingSet = {};
+            for (var e = 0; e < existing.length; e++) existingSet[existing[e]] = true;
+            var lines = input.split('\n');
+            var newItems = [];
+            for (var li = 0; li < lines.length; li++) {
+                var tline = lines[li].trim();
+                if (!tline) continue;
+                if (existingSet[tline]) continue;
+                newItems.push(tline);
+            }
+            var newArray = parseInput(newItems.join('\n'));
+            var combined = existing.slice();
+            for (var i = 0; i < newArray.length; i++) {
+                if (combined.indexOf(newArray[i]) < 0) combined.push(newArray[i]);
+            }
+            if (newArray.length === 0 && newItems.length === 0) {
+                msgEl.textContent = "没有新数据！"; msgEl.style.color = "red"; return;
+            }
+            if (currentZone === 1) { dataObj.backend1 = combined; } else { dataObj.backend2 = combined; }
+            await saveDataToStorage();
+            msgEl.textContent = "追加成功！新增 " + newArray.length + " 条，共 " + combined.length + " 条数据。";
+            msgEl.style.color = "green";
+            setTimeout(hideUpdateModal, 2000);
+        }
+    </script>
 </body>
 </html>

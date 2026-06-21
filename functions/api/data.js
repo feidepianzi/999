@@ -1,7 +1,7 @@
 // Cloudflare Pages Function: /api/data
 export async function onRequestGet({ env }) {
     try {
-        var value = await env.MM_KV.get("search_app_data_v3");
+        var value = await env.MK_KV.get("search_app_data_v2");
         var data;
         if (!value) {
             data = { frontend: [], backend1: [], backend2: [] };
@@ -40,7 +40,7 @@ export async function onRequestPost({ request, env }) {
         if (!Array.isArray(data.backend1)) data.backend1 = [];
         if (!Array.isArray(data.backend2)) data.backend2 = [];
         
-        await env.MM_KV.put("search_app_data_v3", JSON.stringify(data));
+        await env.MK_KV.put("search_app_data_v2", JSON.stringify(data));
         return new Response("OK", { status: 200 });
     } catch(e) {
         return new Response("ERROR:" + e.toString(), { status: 500 });

@@ -63,20 +63,20 @@
             <h2 id="updateTitle">更新数组数据</h2>
             <p>请输入新的数组数据（每行一个编号，或用顿号/逗号分隔）：</p>
             <div id="zone1Fields">
-                <h3>backend1（上午）</h3>
+                <h3>（上午）</h3>
                 <textarea id="inputBackend1" placeholder="每行一个编号"></textarea>
-                <button class="btn-clear" onclick="clearBackend(1)">清除 backend1</button>
-                <h3>backend2（下午）</h3>
+                <button class="btn-clear" onclick="clearBackend(1)">清除 </button>
+                <h3>（下午）</h3>
                 <textarea id="inputBackend2" placeholder="每行一个编号"></textarea>
-                <button class="btn-clear" onclick="clearBackend(2)">清除 backend2</button>
+                <button class="btn-clear" onclick="clearBackend(2)">清除 </button>
             </div>
             <div id="zone2Fields" style="display:none">
-                <h3>backend3（上午）</h3>
+                <h3>（上午）</h3>
                 <textarea id="inputBackend3" placeholder="每行一个编号"></textarea>
-                <button class="btn-clear" onclick="clearBackend(3)">清除 backend3</button>
-                <h3>backend4（下午）</h3>
+                <button class="btn-clear" onclick="clearBackend(3)">清除 </button>
+                <h3>（下午）</h3>
                 <textarea id="inputBackend4" placeholder="每行一个编号"></textarea>
-                <button class="btn-clear" onclick="clearBackend(4)">清除 backend4</button>
+                <button class="btn-clear" onclick="clearBackend(4)">清除 </button>
             </div>
             <button class="btn-save" onclick="saveArray()">保存</button>
             <button class="btn-cancel" onclick="hideUpdateModal()">取消</button>
@@ -173,7 +173,7 @@
             document.getElementById("inputBackend2").value = (dataObj.backend2 || []).join("\n");
             document.getElementById("inputBackend3").value = (dataObj.backend3 || []).join("\n");
             document.getElementById("inputBackend4").value = (dataObj.backend4 || []).join("\n");
-            document.getElementById("updateMsg").textContent = (z1 ? "backend1/2（上午/下午）" : "backend3/4（上午/下午）") + " 已载入，修改后保存即覆盖";
+            document.getElementById("updateMsg").textContent = (z1 ? "（上午/下午）" : "（上午/下午）") + " 已载入，修改后保存即覆盖";
             document.getElementById("updateMsg").style.color = "rgba(255,255,255,0.5)";
         }
 
@@ -248,14 +248,14 @@
                     dataObj.backend2 = parseInput(document.getElementById("inputBackend2").value);
                     await saveDataToStorage();
                     var n1 = (dataObj.backend1||[]).length, n2 = (dataObj.backend2||[]).length;
-                    msgEl.textContent = "保存成功！backend1+backend2 共 " + (n1+n2) + " 条";
+                    msgEl.textContent = "保存成功！ 共 " + (n1+n2) + " 条";
                     msgEl.style.color = "#66bb6a";
                 } else {
                     dataObj.backend3 = parseInput(document.getElementById("inputBackend3").value);
                     dataObj.backend4 = parseInput(document.getElementById("inputBackend4").value);
                     await saveDataToStorage();
                     var n3 = (dataObj.backend3||[]).length, n4 = (dataObj.backend4||[]).length;
-                    msgEl.textContent = "保存成功！backend3+backend4 共 " + (n3+n4) + " 条";
+                    msgEl.textContent = "保存成功！ 共 " + (n3+n4) + " 条";
                     msgEl.style.color = "#66bb6a";
                 }
                 setTimeout(hideUpdateModal, 2000);

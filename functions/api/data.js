@@ -37,7 +37,7 @@ export async function onRequestOptions(){
 }
 
 function defaultObj(){
-  return { frontend:[], backend1:[], backend2:[], backend3:[], backend4:[], admin1Pwd:"", admin2Pwd:"" };
+  return { frontend:[], frontend1:[], frontend2:[], backend1:[], backend2:[], backend3:[], backend4:[], admin1Pwd:"", admin2Pwd:"" };
 }
 
 function normalize(d){
@@ -45,6 +45,8 @@ function normalize(d){
   var o = defaultObj();
   if(Array.isArray(d.frontend)) o.frontend = d.frontend;
   else if(Array.isArray(d.f)) o.frontend = d.f;
+  if(Array.isArray(d.frontend1)) o.frontend1 = d.frontend1;
+  if(Array.isArray(d.frontend2)) o.frontend2 = d.frontend2;
   if(Array.isArray(d.backend1)) o.backend1 = d.backend1;
   else if(Array.isArray(d.b1)) o.backend1 = d.b1;
   if(Array.isArray(d.backend2)) o.backend2 = d.backend2;
